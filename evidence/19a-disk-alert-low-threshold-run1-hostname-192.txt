@@ -1,0 +1,5 @@
+# 2026-10-27T06:47:21Z run 1: low threshold so the alert must fire
+$ scripts/disk-alert.sh 30 /
+2026-10-27T06:47:21Z disk check on 192: / at 36% used (13Gi of 228Gi, 24Gi free), threshold 30%
+2026-10-27T06:47:21Z ALERT SENT: "[ALERT] Disk 36% used on 192:/ (threshold 30%)" via smtp://127.0.0.1:1025
+exit 0

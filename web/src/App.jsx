@@ -59,7 +59,7 @@ export default function App() {
           </table>
         )}
       </main>
-      <footer>Appointment scheduler v{__APP_VERSION__}</footer>
+      <footer>Appointment scheduler v{__APP_VERSION__}. New in 1.1: bookings open 7 days a week.</footer>
     </div>
   );
 }

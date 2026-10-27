@@ -1,0 +1,11 @@
+{
+  "name": "monitoring-setup",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "setup": "node kuma-setup.mjs"
+  },
+  "dependencies": {
+    "socket.io-client": "^4.8.1"
+  }
+}

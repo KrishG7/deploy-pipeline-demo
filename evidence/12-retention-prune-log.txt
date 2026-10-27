@@ -1,0 +1,62 @@
+2026-10-27T06:29:46Z [prune] backups/production/retention-test/daily: 60 backups found, policy keeps 7 daily + 4 weekly
+KEEP production_daily_20261027T020000Z.dump (daily+weekly)
+KEEP production_daily_20261026T020000Z.dump (daily)
+KEEP production_daily_20261025T020000Z.dump (daily+weekly)
+KEEP production_daily_20261024T020000Z.dump (daily)
+KEEP production_daily_20261023T020000Z.dump (daily)
+KEEP production_daily_20261022T020000Z.dump (daily)
+KEEP production_daily_20261021T020000Z.dump (daily)
+DELETE production_daily_20261020T020000Z.dump
+DELETE production_daily_20261019T020000Z.dump
+KEEP production_daily_20261018T020000Z.dump (weekly)
+DELETE production_daily_20261017T020000Z.dump
+DELETE production_daily_20261016T020000Z.dump
+DELETE production_daily_20261015T020000Z.dump
+DELETE production_daily_20261014T020000Z.dump
+DELETE production_daily_20261013T020000Z.dump
+DELETE production_daily_20261012T020000Z.dump
+KEEP production_daily_20261011T020000Z.dump (weekly)
+DELETE production_daily_20261010T020000Z.dump
+DELETE production_daily_20261009T020000Z.dump
+DELETE production_daily_20261008T020000Z.dump
+DELETE production_daily_20261007T020000Z.dump
+DELETE production_daily_20261006T020000Z.dump
+DELETE production_daily_20261005T020000Z.dump
+DELETE production_daily_20261004T020000Z.dump
+DELETE production_daily_20261003T020000Z.dump
+DELETE production_daily_20261002T020000Z.dump
+DELETE production_daily_20261001T020000Z.dump
+DELETE production_daily_20260930T020000Z.dump
+DELETE production_daily_20260929T020000Z.dump
+DELETE production_daily_20260928T020000Z.dump
+DELETE production_daily_20260927T020000Z.dump
+DELETE production_daily_20260926T020000Z.dump
+DELETE production_daily_20260925T020000Z.dump
+DELETE production_daily_20260924T020000Z.dump
+DELETE production_daily_20260923T020000Z.dump
+DELETE production_daily_20260922T020000Z.dump
+DELETE production_daily_20260921T020000Z.dump
+DELETE production_daily_20260920T020000Z.dump
+DELETE production_daily_20260919T020000Z.dump
+DELETE production_daily_20260918T020000Z.dump
+DELETE production_daily_20260917T020000Z.dump
+DELETE production_daily_20260916T020000Z.dump
+DELETE production_daily_20260915T020000Z.dump
+DELETE production_daily_20260914T020000Z.dump
+DELETE production_daily_20260913T020000Z.dump
+DELETE production_daily_20260912T020000Z.dump
+DELETE production_daily_20260911T020000Z.dump
+DELETE production_daily_20260910T020000Z.dump
+DELETE production_daily_20260909T020000Z.dump
+DELETE production_daily_20260908T020000Z.dump
+DELETE production_daily_20260907T020000Z.dump
+DELETE production_daily_20260906T020000Z.dump
+DELETE production_daily_20260905T020000Z.dump
+DELETE production_daily_20260904T020000Z.dump
+DELETE production_daily_20260903T020000Z.dump
+DELETE production_daily_20260902T020000Z.dump
+DELETE production_daily_20260901T020000Z.dump
+DELETE production_daily_20260831T020000Z.dump
+DELETE production_daily_20260830T020000Z.dump
+DELETE production_daily_20260829T020000Z.dump
+2026-10-27T06:29:48Z [prune] kept 9, deleted 51

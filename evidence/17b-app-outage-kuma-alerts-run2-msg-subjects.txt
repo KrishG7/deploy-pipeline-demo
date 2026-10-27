@@ -1,0 +1,17 @@
+# 2026-10-27T06:46:00Z Part B, run 2 (plain-text subjects): production api down long enough for monitoring to alert (manual stop, then manual start)
+mailbox before: 0 messages (cleared before this run)
+06:46:00Z docker compose -p production stop api
+ Container production-api-1 Stopping 
+ Container production-api-1 Stopped 
+06:46:01Z /health now: 502
+06:46:03Z DOWN alert received in Mailpit:
+2026-10-27T06:46:01.849Z | [DOWN] production /health: [production /health] [🔴 Down] Request failed with status code 502
+06:46:03Z docker compose -p production start api
+ Container production-db-1 Waiting 
+ Container production-db-1 Healthy 
+ Container production-api-1 Starting 
+ Container production-api-1 Started 
+06:46:22Z UP alert received in Mailpit:
+2026-10-27T06:46:21.847Z | [UP] production /health: [production /health] [✅ Up] 200 - OK
+2026-10-27T06:46:01.849Z | [DOWN] production /health: [production /health] [🔴 Down] Request failed with status code 502
+06:46:22Z /health: {"status":"ok","version":"1.0.0","environment":"production","database":{"status":"ok","latencyMs":1}}

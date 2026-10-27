@@ -1,0 +1,12 @@
+{
+  "name": "evidence-pdf",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "screenshots": "node screenshots.mjs",
+    "build": "node build-pdf.mjs"
+  },
+  "dependencies": {
+    "playwright": "^1.56.0"
+  }
+}

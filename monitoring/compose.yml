@@ -6,8 +6,10 @@
 # Mailpit is a local inbox standing in for the real alert mailbox.
 services:
   uptime-kuma:
-    image: louislam/uptime-kuma:1.23.16
+    image: louislam/uptime-kuma:2.5.8
     restart: unless-stopped
+    environment:
+      UPTIME_KUMA_DB_TYPE: sqlite
     ports:
       - "127.0.0.1:3001:3001"
     volumes:
@@ -19,7 +21,7 @@ services:
       - "staging.localhost:host-gateway"
 
   mailpit:
-    image: axllent/mailpit:v1.27
+    image: axllent/mailpit:v1.28
     restart: unless-stopped
     ports:
       - "127.0.0.1:8025:8025"   # web inbox

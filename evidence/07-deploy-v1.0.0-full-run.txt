@@ -1,0 +1,38 @@
+# Deploy run 40460231836 (v1.0.0), after approval
+Build and push images: conclusion=success started=2026-10-27T06:17:39Z completed=2026-10-27T06:20:27Z
+Deploy to staging: conclusion=success started=2026-10-27T06:20:33Z completed=2026-10-27T06:22:25Z
+Deploy to production: conclusion=success started=2026-10-27T06:24:29Z completed=2026-10-27T06:25:02Z
+
+## Approval record (gh api .../runs/40460231836/approvals)
+{"environments":["production"],"state":"approved","user":"<repo-owner>"}
+
+## Job: Build and push images (GitHub-hosted, linux/amd64 + linux/arm64)
+#27 pushing manifest for ghcr.io/<repo-owner>/deploy-pipeline-demo-api:sha-6b743c0@sha256:4af6a5e49b2dd137eb24ec461afecdd91ef6cd5dae978847ce847f25bf8d7bfa
+#27 pushing manifest for ghcr.io/<repo-owner>/deploy-pipeline-demo-api:sha-6b743c0@sha256:4af6a5e49b2dd137eb24ec461afecdd91ef6cd5dae978847ce847f25bf8d7bfa 2.1s done
+#27 pushing manifest for ghcr.io/<repo-owner>/deploy-pipeline-demo-api:v1.0.0@sha256:4af6a5e49b2dd137eb24ec461afecdd91ef6cd5dae978847ce847f25bf8d7bfa
+#27 pushing manifest for ghcr.io/<repo-owner>/deploy-pipeline-demo-api:v1.0.0@sha256:4af6a5e49b2dd137eb24ec461afecdd91ef6cd5dae978847ce847f25bf8d7bfa 0.7s done
+#32 pushing manifest for ghcr.io/<repo-owner>/deploy-pipeline-demo-web:sha-6b743c0@sha256:a17681466301da4c71b8ef758ee922b5fcf35a44214870459f4602e3b1418e3f
+#32 pushing manifest for ghcr.io/<repo-owner>/deploy-pipeline-demo-web:sha-6b743c0@sha256:a17681466301da4c71b8ef758ee922b5fcf35a44214870459f4602e3b1418e3f 2.2s done
+#32 pushing manifest for ghcr.io/<repo-owner>/deploy-pipeline-demo-web:v1.0.0@sha256:a17681466301da4c71b8ef758ee922b5fcf35a44214870459f4602e3b1418e3f
+#32 pushing manifest for ghcr.io/<repo-owner>/deploy-pipeline-demo-web:v1.0.0@sha256:a17681466301da4c71b8ef758ee922b5fcf35a44214870459f4602e3b1418e3f 0.7s done
+#23 pushing manifest for ghcr.io/<repo-owner>/deploy-pipeline-demo-backup:sha-6b743c0@sha256:b31cb75e5887489eb5c6e1ef88e63326163de5f78079df06e75beb507e40f632
+#23 pushing manifest for ghcr.io/<repo-owner>/deploy-pipeline-demo-backup:sha-6b743c0@sha256:b31cb75e5887489eb5c6e1ef88e63326163de5f78079df06e75beb507e40f632 2.4s done
+#23 pushing manifest for ghcr.io/<repo-owner>/deploy-pipeline-demo-backup:v1.0.0@sha256:b31cb75e5887489eb5c6e1ef88e63326163de5f78079df06e75beb507e40f632
+#23 pushing manifest for ghcr.io/<repo-owner>/deploy-pipeline-demo-backup:v1.0.0@sha256:b31cb75e5887489eb5c6e1ef88e63326163de5f78079df06e75beb507e40f632 0.9s done
+
+## Job: Deploy to staging (self-hosted runner demo-deployer)
+wrote staging env file (18 variables, mode 600)
+2026-10-27T06:21:00Z [deploy:staging] deploying tag sha-6b743c0 (previous: none)
+2026-10-27T06:21:00Z [deploy:staging] pulling images
+2026-10-27T06:21:57Z [deploy:staging] api image ghcr.io/<repo-owner>/deploy-pipeline-demo-api:sha-6b743c0 is version 1.0.0 (ghcr.io/<repo-owner>/deploy-pipeline-demo-api@sha256:4af6a5e49b2dd137eb24ec461afecdd91ef6cd5dae978847ce847f25bf8d7bfa)
+2026-10-27T06:22:14Z [deploy:staging] containers started, waiting up to 60s for https://staging.localhost:8443/health to report version 1.0.0
+2026-10-27T06:22:15Z [deploy:staging] HEALTHY after 18s: {"status":"ok","version":"1.0.0","environment":"staging","database":{"status":"ok","latencyMs":1}}
+
+## Job: Deploy to production (self-hosted runner, after approval)
+wrote production env file (18 variables, mode 600)
+no running production stack yet (first deploy): nothing to back up
+2026-10-27T06:24:38Z [deploy:production] deploying tag sha-6b743c0 (previous: none)
+2026-10-27T06:24:38Z [deploy:production] pulling images
+2026-10-27T06:24:41Z [deploy:production] api image ghcr.io/<repo-owner>/deploy-pipeline-demo-api:sha-6b743c0 is version 1.0.0 (ghcr.io/<repo-owner>/deploy-pipeline-demo-api@sha256:4af6a5e49b2dd137eb24ec461afecdd91ef6cd5dae978847ce847f25bf8d7bfa)
+2026-10-27T06:24:53Z [deploy:production] containers started, waiting up to 60s for https://app.localhost/health to report version 1.0.0
+2026-10-27T06:24:53Z [deploy:production] HEALTHY after 12s: {"status":"ok","version":"1.0.0","environment":"production","database":{"status":"ok","latencyMs":1}}

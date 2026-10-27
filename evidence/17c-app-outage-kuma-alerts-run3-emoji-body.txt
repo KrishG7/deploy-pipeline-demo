@@ -1,0 +1,17 @@
+# 2026-10-27T06:46:36Z Part B, final run: production api down long enough for monitoring to alert (manual stop, then manual start)
+mailbox before: 0 messages (cleared before this run)
+06:46:36Z docker compose -p production stop api
+ Container production-api-1 Stopping 
+ Container production-api-1 Stopped 
+06:46:37Z /health now: 502
+06:46:43Z DOWN alert received in Mailpit:
+2026-10-27T06:46:41.856Z | [DOWN] production /health (https://app.localhost/health)
+06:46:43Z docker compose -p production start api
+ Container production-db-1 Waiting 
+ Container production-db-1 Healthy 
+ Container production-api-1 Starting 
+ Container production-api-1 Started 
+06:47:02Z UP alert received in Mailpit:
+2026-10-27T06:47:01.89Z | [UP] production /health (https://app.localhost/health)
+2026-10-27T06:46:41.856Z | [DOWN] production /health (https://app.localhost/health)
+06:47:02Z /health: {"status":"ok","version":"1.0.0","environment":"production","database":{"status":"ok","latencyMs":1}}

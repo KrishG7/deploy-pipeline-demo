@@ -1,0 +1,29 @@
+# NOTE: this watcher was started after the reviewer had already approved, so its APPROVED line below is the watcher's start time, not the approval time. For v1.0.0 use the GitHub job timestamps in evidence/07.
+2026-10-27T06:24:30.040Z watching run 40460231836, waiting for approval; expecting production /health version 1.0.0
+2026-10-27T06:24:30.057Z BEFORE: curl: (7) Failed to connect to app.localhost port 443 after 0 ms: Couldn't connect to server
+2026-10-27T06:24:30.649Z APPROVED (no pending deployment left)
+2026-10-27T06:24:30.692Z DURING: curl: (7) Failed to connect to app.localhost port 443 after 0 ms: Couldn't connect to server
+2026-10-27T06:24:31.747Z DURING: curl: (7) Failed to connect to app.localhost port 443 after 0 ms: Couldn't connect to server
+2026-10-27T06:24:32.791Z DURING: curl: (7) Failed to connect to app.localhost port 443 after 0 ms: Couldn't connect to server
+2026-10-27T06:24:33.833Z DURING: curl: (7) Failed to connect to app.localhost port 443 after 0 ms: Couldn't connect to server
+2026-10-27T06:24:34.883Z DURING: curl: (7) Failed to connect to app.localhost port 443 after 0 ms: Couldn't connect to server
+2026-10-27T06:24:35.926Z DURING: curl: (7) Failed to connect to app.localhost port 443 after 0 ms: Couldn't connect to server
+2026-10-27T06:24:36.967Z DURING: curl: (7) Failed to connect to app.localhost port 443 after 0 ms: Couldn't connect to server
+2026-10-27T06:24:38.009Z DURING: curl: (7) Failed to connect to app.localhost port 443 after 0 ms: Couldn't connect to server
+2026-10-27T06:24:39.076Z DURING: curl: (7) Failed to connect to app.localhost port 443 after 0 ms: Couldn't connect to server
+2026-10-27T06:24:40.118Z DURING: curl: (7) Failed to connect to app.localhost port 443 after 0 ms: Couldn't connect to server
+2026-10-27T06:24:41.163Z DURING: curl: (7) Failed to connect to app.localhost port 443 after 0 ms: Couldn't connect to server
+2026-10-27T06:24:42.206Z DURING: curl: (7) Failed to connect to app.localhost port 443 after 0 ms: Couldn't connect to server
+2026-10-27T06:24:43.247Z DURING: curl: (7) Failed to connect to app.localhost port 443 after 0 ms: Couldn't connect to server
+2026-10-27T06:24:44.313Z DURING: curl: (7) Failed to connect to app.localhost port 443 after 0 ms: Couldn't connect to server
+2026-10-27T06:24:45.356Z DURING: curl: (7) Failed to connect to app.localhost port 443 after 0 ms: Couldn't connect to server
+2026-10-27T06:24:46.401Z DURING: curl: (7) Failed to connect to app.localhost port 443 after 0 ms: Couldn't connect to server
+2026-10-27T06:24:47.443Z DURING: curl: (7) Failed to connect to app.localhost port 443 after 0 ms: Couldn't connect to server
+2026-10-27T06:24:48.486Z DURING: curl: (7) Failed to connect to app.localhost port 443 after 0 ms: Couldn't connect to server
+2026-10-27T06:24:49.528Z DURING: curl: (7) Failed to connect to app.localhost port 443 after 0 ms: Couldn't connect to server
+2026-10-27T06:24:50.572Z DURING: curl: (7) Failed to connect to app.localhost port 443 after 0 ms: Couldn't connect to server
+2026-10-27T06:24:51.613Z DURING: curl: (7) Failed to connect to app.localhost port 443 after 0 ms: Couldn't connect to server
+2026-10-27T06:24:52.657Z DURING: curl: (7) Failed to connect to app.localhost port 443 after 0 ms: Couldn't connect to server
+2026-10-27T06:24:53.712Z DURING: {"status":"ok","version":"1.0.0","environment":"production","database":{"status":"ok","latencyMs":2}}
+2026-10-27T06:24:53.761Z HEALTHY on 1.0.0; approval to healthy: 23.2 s
+2026-10-27T06:24:58.803Z AFTER: {"status":"ok","version":"1.0.0","environment":"production","database":{"status":"ok","latencyMs":1}}

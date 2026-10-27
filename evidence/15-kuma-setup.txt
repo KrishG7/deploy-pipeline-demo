@@ -1,0 +1,12 @@
+# Kuma configured by monitoring/kuma-setup.mjs (first run, then a re-run that updated the notification subject)
+admin account created: true
+logged in
+notification created: 1
+monitor created: production /health -> https://app.localhost/health (id 1)
+monitor created: staging /health -> https://staging.localhost:8443/health (id 2)
+logged in
+notification updated: 1
+monitor exists: production /health
+monitor exists: staging /health
+re-run after subject change: notification updated: 1
+re-run after body template change: notification updated: 1

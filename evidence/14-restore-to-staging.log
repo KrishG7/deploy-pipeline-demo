@@ -1,0 +1,34 @@
+# 2026-10-27T06:30:02Z restore drill: fresh production backup restored into staging
+staging rows before: 25
+
+$ scripts/compose.sh production exec backup /backup.sh manual
+2026-10-27T06:30:03Z [backup:production] starting manual backup of database 'appointments' -> offsite/backups/production/manual/production_manual_20261027T063003Z.dump
+2026-10-27T06:30:03Z [backup:production] uploaded production_manual_20261027T063003Z.dump (4904 bytes, 11 TOC entries, appointments rows=28, sha256=63ecbfbbdb68b24617acfb3c18da261ca7aedb57b35419999c895dd7a9cf3930) in 0s
+
+$ scripts/restore-to-staging.sh production_manual_20261027T063003Z.dump
+2026-10-27T06:30:03Z [restore-to-staging] restoring production/manual/production_manual_20261027T063003Z.dump into staging
+2026-10-27T06:30:03Z [restore-to-staging] staging before: {"status":"ok","version":"1.0.0","environment":"staging","database":{"status":"ok","latencyMs":1}}
+2026-10-27T06:30:03Z [restore-to-staging] step 1/4: stopping staging api
+     Container staging-api-1 Stopping 
+     Container staging-api-1 Stopped 
+2026-10-27T06:30:03Z [restore-to-staging] step 2/4: download, verify, drop + recreate database, pg_restore
+    2026-10-27T06:30:03Z [restore] downloading offsite/backups/production/manual/production_manual_20261027T063003Z.dump
+    2026-10-27T06:30:03Z [restore] downloaded 4904 bytes; sha256 63ecbfbbdb68b24617acfb3c18da261ca7aedb57b35419999c895dd7a9cf3930
+    2026-10-27T06:30:03Z [restore] checksum matches metadata; rows at backup time: 28
+    2026-10-27T06:30:03Z [restore] dropping and recreating database 'appointments'
+    2026-10-27T06:30:03Z [restore] pg_restore into 'appointments'
+    2026-10-27T06:30:03Z [restore] appointments rows after restore: 28 (expected 28)
+    2026-10-27T06:30:03Z [restore] row count check: OK
+2026-10-27T06:30:04Z [restore-to-staging] step 3/4: starting staging api, waiting for /health
+     Container staging-db-1 Waiting 
+     Container staging-db-1 Healthy 
+     Container staging-api-1 Starting 
+     Container staging-api-1 Started 
+2026-10-27T06:30:06Z [restore-to-staging] health: {"status":"ok","version":"1.0.0","environment":"staging","database":{"status":"ok","latencyMs":20}}
+2026-10-27T06:30:06Z [restore-to-staging] step 4/4: row count served by the API
+2026-10-27T06:30:06Z [restore-to-staging] API returns 28 appointments, database has 28 (recorded at backup time and checked in step 2)
+2026-10-27T06:30:06Z [restore-to-staging] RESULT: restore OK. restore step (download, verify, drop, pg_restore, count) 279 ms; total time 3.5 s (3501 ms)
+exit code: 0
+
+staging rows after: 28
+staging has the production-only rows: Production patient 1,Production patient 2,Production patient 3,

@@ -7,6 +7,5 @@ dist/
 *.dump
 *.crt
 .DS_Store
-/pdf/node_modules/
 /pdf/build/
 /monitoring/.env

@@ -1,0 +1,11 @@
+# 2026-10-27T06:47:21Z run 2: normal threshold 80%
+$ scripts/disk-alert.sh 80 /
+2026-10-27T06:47:21Z disk check on 192: / at 36% used (13Gi of 228Gi, 24Gi free), threshold 80%
+2026-10-27T06:47:21Z OK: 36% <= 80%, no alert sent
+exit 0
+
+# run 3: normal threshold 80% on the macOS data volume, where this Mac's files (and Docker's disk image) actually live
+$ scripts/disk-alert.sh 80 /System/Volumes/Data
+2026-10-27T06:47:21Z disk check on 192: /System/Volumes/Data at 89% used (178Gi of 228Gi, 24Gi free), threshold 80%
+2026-10-27T06:47:21Z ALERT SENT: "[ALERT] Disk 89% used on 192:/System/Volumes/Data (threshold 80%)" via smtp://127.0.0.1:1025
+exit 0

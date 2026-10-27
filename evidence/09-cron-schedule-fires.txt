@@ -1,0 +1,16 @@
+# 2026-10-27T06:26:51Z cron firing check: one-off staging backup container with BACKUP_SCHEDULE='* * * * *' (the real schedule is daily at 02:00 UTC)
+ Container staging-backup-run-2e049d54c415 Creating 
+ Container staging-backup-run-2e049d54c415 Created 
+backup sidecar for staging: schedule '* * * * *' (UTC), retention 7 daily / 4 weekly
+2026-10-27T06:27:00Z [backup:staging] starting daily backup of database 'appointments' -> offsite/backups/staging/daily/staging_daily_20261027T062700Z.dump
+2026-10-27T06:27:00Z [backup:staging] uploaded staging_daily_20261027T062700Z.dump (4845 bytes, 11 TOC entries, appointments rows=25, sha256=867d142888950eaf7d397fe2c0810353bc4c753406c4732652c441fda4fffcc5) in 0s
+2026-10-27T06:27:00Z [prune] backups/staging/daily: 1 backups found, policy keeps 7 daily + 4 weekly
+KEEP staging_daily_20261027T062700Z.dump (daily+weekly)
+2026-10-27T06:27:00Z [prune] kept 1, deleted 0
+2026-10-27T06:28:00Z [backup:staging] starting daily backup of database 'appointments' -> offsite/backups/staging/daily/staging_daily_20261027T062800Z.dump
+2026-10-27T06:28:00Z [backup:staging] uploaded staging_daily_20261027T062800Z.dump (4845 bytes, 11 TOC entries, appointments rows=25, sha256=21fb7f8685126efc1e5b5c633d2d0e3552ec90cd2f372c34847ddd44d948c224) in 0s
+2026-10-27T06:28:00Z [prune] backups/staging/daily: 2 backups found, policy keeps 7 daily + 4 weekly
+KEEP staging_daily_20261027T062800Z.dump (daily+weekly)
+DELETE staging_daily_20261027T062700Z.dump
+2026-10-27T06:28:00Z [prune] kept 1, deleted 1
+# 2026-10-27T06:28:10Z one-off container stopped

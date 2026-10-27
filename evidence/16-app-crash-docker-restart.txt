@@ -1,0 +1,24 @@
+# 2026-10-27T06:44:33Z Part A: crash the production api process (SIGKILL) and let Docker recover it
+restart policy: unless-stopped | healthcheck: ["CMD-SHELL","node -e \"fetch('http://127.0.0.1:3000/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))\""]
+06:44:33.441Z before: state=running health=healthy restarts=0 pid=5531 started=2026-10-27T06:24:47.436154168Z
+06:44:33.493Z processes in container:
+PID   USER     COMMAND
+    1 node     /sbin/docker-init -- docker-entrypoint.sh sh -c node src/migrate.js && node src/seed.js && exec node src/server.js
+    7 node     node src/server.js
+ 1432 node     ps -o pid,user,args
+06:44:33.576Z kill -9 the node process
+06:44:33.678Z /health=502 state=restarting health=unhealthy restarts=1 pid=0 started=2026-10-27T06:24:47.436154168Z
+06:44:34.302Z /health=200 state=running health=starting restarts=1 pid=38569 started=2026-10-27T06:44:33.758210717Z
+06:44:34.908Z /health=200 state=running health=starting restarts=1 pid=38569 started=2026-10-27T06:44:33.758210717Z
+06:44:35.523Z /health=200 state=running health=starting restarts=1 pid=38569 started=2026-10-27T06:44:33.758210717Z
+06:44:36.130Z /health=200 state=running health=starting restarts=1 pid=38569 started=2026-10-27T06:44:33.758210717Z
+06:44:36.740Z /health=200 state=running health=starting restarts=1 pid=38569 started=2026-10-27T06:44:33.758210717Z
+06:44:37.344Z /health=200 state=running health=starting restarts=1 pid=38569 started=2026-10-27T06:44:33.758210717Z
+06:44:37.953Z /health=200 state=running health=starting restarts=1 pid=38569 started=2026-10-27T06:44:33.758210717Z
+06:44:38.558Z /health=200 state=running health=starting restarts=1 pid=38569 started=2026-10-27T06:44:33.758210717Z
+06:44:39.158Z /health=200 state=running health=healthy restarts=1 pid=38569 started=2026-10-27T06:44:33.758210717Z
+06:44:39.231Z after: state=running health=healthy restarts=1 pid=38569 started=2026-10-27T06:44:33.758210717Z
+last exit code recorded by Docker: 0
+api log lines around the restart:
+seed skipped: 28 rows already present
+api 1.0.0 listening on 3000

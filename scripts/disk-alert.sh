@@ -10,6 +10,7 @@
 #   ALERT_SMTP_URL   smtp://host:port        (demo: smtp://127.0.0.1:1025, Mailpit)
 #   ALERT_FROM       sender address
 #   ALERT_TO         recipient address
+#   ALERT_HOST_LABEL name shown in the alert (default: hostname -s)
 set -euo pipefail
 
 root=$(cd "$(dirname "$0")/.." && pwd)
@@ -18,7 +19,7 @@ root=$(cd "$(dirname "$0")/.." && pwd)
 threshold=${1:-${DISK_ALERT_THRESHOLD:-80}}
 path=${2:-/}
 : "${ALERT_SMTP_URL:?}" "${ALERT_FROM:?}" "${ALERT_TO:?}"
-host=$(hostname -s)
+host=${ALERT_HOST_LABEL:-$(hostname -s)}
 now=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 
 read -r size used avail pct mount < <(df -Ph "$path" | awk 'NR==2 {print $2, $3, $4, $5, $6}')

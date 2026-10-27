@@ -1,0 +1,8 @@
+# Deploy run 40460231836 (v1.0.0): jobs
+Build and push images: status=completed conclusion=success started=2026-10-27T06:17:39Z
+Deploy to staging: status=completed conclusion=success started=2026-10-27T06:20:33Z
+Deploy to production: status=waiting conclusion= started=2026-10-27T06:22:25Z
+
+## Build job 122042809156: image tags pushed to GHCR
+
+## Staging job 122043720939: deploy step output (runner on this Mac)

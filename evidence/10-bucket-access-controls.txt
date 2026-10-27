@@ -1,0 +1,13 @@
+# 2026-10-27T06:29:25Z bucket access checks, run from each environment's backup container with its own credentials
+credential | action | result | last line of output
+production user | list own prefix production/daily | ALLOWED | [2026-10-27 06:26:42 UTC]   306B STANDARD production_daily_20261027T062642Z.dump.meta.json
+production user | list staging prefix | DENIED | mc: <ERROR> Unable to list folder. Access Denied.
+production user | write into staging prefix | DENIED |  0 B / ? mc: <ERROR> Unable to write to one or more targets. Insufficient permissions to access this path `http://host.docker.internal:9000
+staging user | list production prefix (needed for restore) | ALLOWED | [2026-10-27 06:26:42 UTC]   306B STANDARD production_daily_20261027T062642Z.dump.meta.json
+staging user | read a production backup (needed for restore) | ALLOWED | 4904
+staging user | write into production prefix | DENIED |  0 B / ? mc: <ERROR> Unable to write to one or more targets. Insufficient permissions to access this path `http://host.docker.internal:9000
+staging user | delete a production backup | DENIED | mc: <ERROR> Failed to remove `offsite/backups/production/daily/production_daily_20261027T062642Z.dump`. Access Denied.
+
+production backups still present afterwards:
+[2026-10-27 06:26:42 UTC] 4.8KiB STANDARD production_daily_20261027T062642Z.dump
+[2026-10-27 06:26:42 UTC]   306B STANDARD production_daily_20261027T062642Z.dump.meta.json

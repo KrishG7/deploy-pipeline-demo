@@ -1,0 +1,10 @@
+# 2026-10-27T06:29:48Z AFTER pruning (7 daily + 4 weekly): 9 backups left
+production_daily_20261011T020000Z.dump  Sun 2026-10-11 ISO-week 2026-W41
+production_daily_20261018T020000Z.dump  Sun 2026-10-18 ISO-week 2026-W42
+production_daily_20261021T020000Z.dump  Wed 2026-10-21 ISO-week 2026-W43
+production_daily_20261022T020000Z.dump  Thu 2026-10-22 ISO-week 2026-W43
+production_daily_20261023T020000Z.dump  Fri 2026-10-23 ISO-week 2026-W43
+production_daily_20261024T020000Z.dump  Sat 2026-10-24 ISO-week 2026-W43
+production_daily_20261025T020000Z.dump  Sun 2026-10-25 ISO-week 2026-W43
+production_daily_20261026T020000Z.dump  Mon 2026-10-26 ISO-week 2026-W44
+production_daily_20261027T020000Z.dump  Tue 2026-10-27 ISO-week 2026-W44
