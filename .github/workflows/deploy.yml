@@ -1,0 +1,173 @@
+name: Deploy
+
+# Every push to main: build once, deploy to staging automatically, then wait
+# for a reviewer to approve production. Production deploys the exact image tag
+# that passed staging; it never rebuilds.
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "**/*.md"
+      - "docs/**"
+      - "evidence/**"
+      - "pdf/**"
+      - "*.pdf"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build and push images
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      tag: ${{ steps.meta.outputs.tag }}
+      version: ${{ steps.meta.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Image prefix (lowercase owner/repo)
+        run: echo "IMAGE_PREFIX=ghcr.io/$(echo "$GITHUB_REPOSITORY" | tr "[:upper:]" "[:lower:]")" >> "$GITHUB_ENV"
+
+      - id: meta
+        name: Work out tags
+        run: |
+          version="$(cat VERSION)"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "tag=sha-${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
+
+      - uses: docker/setup-qemu-action@v3
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Release tags (v1.0.0) are immutable: if this version was already
+      # released, only the sha tag is pushed, so a rollback to v1.0.0 always
+      # gets the original image.
+      - id: release
+        name: Is v${{ steps.meta.outputs.version }} already released?
+        run: |
+          if docker buildx imagetools inspect "$IMAGE_PREFIX-api:v${{ steps.meta.outputs.version }}" >/dev/null 2>&1; then
+            echo "::warning::v${{ steps.meta.outputs.version }} already exists; pushing only ${{ steps.meta.outputs.tag }}. Bump VERSION for a new release."
+            echo "push_version=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "push_version=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build and push api
+        uses: docker/build-push-action@v6
+        with:
+          context: api
+          platforms: linux/amd64,linux/arm64
+          push: true
+          labels: org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+          build-args: APP_VERSION=${{ steps.meta.outputs.version }}
+          tags: |
+            ${{ env.IMAGE_PREFIX }}-api:${{ steps.meta.outputs.tag }}
+            ${{ steps.release.outputs.push_version == 'true' && format('{0}-api:v{1}', env.IMAGE_PREFIX, steps.meta.outputs.version) || '' }}
+          cache-from: type=gha,scope=api
+          cache-to: type=gha,mode=max,scope=api
+
+      - name: Build and push web
+        uses: docker/build-push-action@v6
+        with:
+          context: web
+          platforms: linux/amd64,linux/arm64
+          push: true
+          labels: org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+          build-args: APP_VERSION=${{ steps.meta.outputs.version }}
+          tags: |
+            ${{ env.IMAGE_PREFIX }}-web:${{ steps.meta.outputs.tag }}
+            ${{ steps.release.outputs.push_version == 'true' && format('{0}-web:v{1}', env.IMAGE_PREFIX, steps.meta.outputs.version) || '' }}
+          cache-from: type=gha,scope=web
+          cache-to: type=gha,mode=max,scope=web
+
+      - name: Build and push backup
+        uses: docker/build-push-action@v6
+        with:
+          context: deploy/backup
+          platforms: linux/amd64,linux/arm64
+          push: true
+          labels: org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+          tags: |
+            ${{ env.IMAGE_PREFIX }}-backup:${{ steps.meta.outputs.tag }}
+            ${{ steps.release.outputs.push_version == 'true' && format('{0}-backup:v{1}', env.IMAGE_PREFIX, steps.meta.outputs.version) || '' }}
+          cache-from: type=gha,scope=backup
+          cache-to: type=gha,mode=max,scope=backup
+
+      - name: Summary
+        run: |
+          echo "Built version ${{ steps.meta.outputs.version }} as tag \`${{ steps.meta.outputs.tag }}\`" >> "$GITHUB_STEP_SUMMARY"
+
+  staging:
+    name: Deploy to staging
+    needs: build
+    runs-on: [self-hosted, demo-deployer]
+    environment:
+      name: staging
+      url: https://staging.localhost:8443
+    permissions:
+      contents: read
+      packages: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Image prefix (lowercase owner/repo)
+        run: echo "IMAGE_PREFIX=ghcr.io/$(echo "$GITHUB_REPOSITORY" | tr "[:upper:]" "[:lower:]")" >> "$GITHUB_ENV"
+      - name: Isolated Docker login for this job
+        run: |
+          echo "DOCKER_CONFIG=$RUNNER_TEMP/docker-config" >> "$GITHUB_ENV"
+          mkdir -p "$RUNNER_TEMP/docker-config"
+          ln -sfn "$HOME/.docker/cli-plugins" "$RUNNER_TEMP/docker-config/cli-plugins"
+      - run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+      - name: Write env file from environment secrets
+        run: deploy/write-env.sh staging
+        env:
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
+      - name: Deploy ${{ needs.build.outputs.tag }}
+        run: deploy/deploy.sh staging "${{ needs.build.outputs.tag }}"
+      - if: always()
+        run: docker logout ghcr.io; rm -rf "$RUNNER_TEMP/docker-config"
+
+  production:
+    name: Deploy to production
+    needs: [build, staging]
+    runs-on: [self-hosted, demo-deployer]
+    # The production environment has a required reviewer: this job waits for
+    # approval before it starts.
+    environment:
+      name: production
+      url: https://app.localhost
+    permissions:
+      contents: read
+      packages: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Image prefix (lowercase owner/repo)
+        run: echo "IMAGE_PREFIX=ghcr.io/$(echo "$GITHUB_REPOSITORY" | tr "[:upper:]" "[:lower:]")" >> "$GITHUB_ENV"
+      - name: Isolated Docker login for this job
+        run: |
+          echo "DOCKER_CONFIG=$RUNNER_TEMP/docker-config" >> "$GITHUB_ENV"
+          mkdir -p "$RUNNER_TEMP/docker-config"
+          ln -sfn "$HOME/.docker/cli-plugins" "$RUNNER_TEMP/docker-config/cli-plugins"
+      - run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+      - name: Write env file from environment secrets
+        run: deploy/write-env.sh production
+        env:
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
+      - name: Pre-deploy backup
+        run: deploy/predeploy-backup.sh production "${{ needs.build.outputs.tag }}"
+      - name: Deploy ${{ needs.build.outputs.tag }} (same tag that passed staging)
+        run: deploy/deploy.sh production "${{ needs.build.outputs.tag }}"
+      - if: always()
+        run: docker logout ghcr.io; rm -rf "$RUNNER_TEMP/docker-config"

@@ -1,0 +1,32 @@
+# Monitoring, in its own Compose project so it keeps running (and alerting)
+# while an app stack is down:
+#   docker compose -p monitoring -f monitoring/compose.yml up -d
+#
+# Uptime Kuma checks https://<env>/health through each environment's Caddy.
+# Mailpit is a local inbox standing in for the real alert mailbox.
+services:
+  uptime-kuma:
+    image: louislam/uptime-kuma:1.23.16
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3001:3001"
+    volumes:
+      - kuma_data:/app/data
+    extra_hosts:
+      # Inside this container the demo hostnames must point at the Mac, where
+      # each environment's Caddy listens. Real servers use public DNS instead.
+      - "app.localhost:host-gateway"
+      - "staging.localhost:host-gateway"
+
+  mailpit:
+    image: axllent/mailpit:v1.27
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8025:8025"   # web inbox
+      - "127.0.0.1:1025:1025"   # SMTP
+    environment:
+      MP_SMTP_AUTH_ACCEPT_ANY: "1"
+      MP_SMTP_AUTH_ALLOW_INSECURE: "1"
+
+volumes:
+  kuma_data:

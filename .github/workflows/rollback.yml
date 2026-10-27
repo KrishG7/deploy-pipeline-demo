@@ -1,0 +1,77 @@
+name: Rollback production
+
+# Redeploys an earlier, already-built image tag to production. No build, no
+# database change. Uses the same production environment, so it waits for the
+# same reviewer approval as a normal release.
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Image tag to roll back to (for example v1.0.0 or sha-abc1234)"
+        required: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+env:
+  TAG: ${{ inputs.tag }}
+
+jobs:
+  check:
+    name: Check the tag exists
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+    steps:
+      - name: Validate input
+        run: |
+          if ! [[ "$TAG" =~ ^(v[0-9]+\.[0-9]+\.[0-9]+|sha-[0-9a-f]{7})$ ]]; then
+            echo "::error::tag must look like v1.0.0 or sha-abc1234"; exit 1
+          fi
+      - name: Image prefix (lowercase owner/repo)
+        run: echo "IMAGE_PREFIX=ghcr.io/$(echo "$GITHUB_REPOSITORY" | tr "[:upper:]" "[:lower:]")" >> "$GITHUB_ENV"
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: All three images exist for this tag
+        run: |
+          for s in api web backup; do
+            docker buildx imagetools inspect "$IMAGE_PREFIX-$s:$TAG" --format '{{json .Manifest.Digest}}'
+          done
+
+  rollback:
+    name: Roll back production to ${{ inputs.tag }}
+    needs: check
+    runs-on: [self-hosted, demo-deployer]
+    environment:
+      name: production
+      url: https://app.localhost
+    permissions:
+      contents: read
+      packages: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Image prefix (lowercase owner/repo)
+        run: echo "IMAGE_PREFIX=ghcr.io/$(echo "$GITHUB_REPOSITORY" | tr "[:upper:]" "[:lower:]")" >> "$GITHUB_ENV"
+      - name: Isolated Docker login for this job
+        run: |
+          echo "DOCKER_CONFIG=$RUNNER_TEMP/docker-config" >> "$GITHUB_ENV"
+          mkdir -p "$RUNNER_TEMP/docker-config"
+          ln -sfn "$HOME/.docker/cli-plugins" "$RUNNER_TEMP/docker-config/cli-plugins"
+      - run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+      - name: Write env file from environment secrets
+        run: deploy/write-env.sh production
+        env:
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
+      - name: Redeploy ${{ inputs.tag }}
+        run: deploy/deploy.sh production "$TAG"
+      - if: always()
+        run: docker logout ghcr.io; rm -rf "$RUNNER_TEMP/docker-config"

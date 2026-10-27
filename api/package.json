@@ -1,0 +1,27 @@
+{
+  "name": "appointments-api",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "src/server.js",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node src/migrate.js && node src/seed.js && node src/server.js",
+    "migrate": "node src/migrate.js",
+    "seed": "node src/seed.js",
+    "lint": "eslint .",
+    "test": "node --test --test-concurrency=1 test/*.test.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "pg": "^8.13.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.17.0",
+    "eslint": "^9.17.0",
+    "globals": "^15.14.0",
+    "supertest": "^7.0.0"
+  }
+}

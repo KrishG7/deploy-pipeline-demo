@@ -1,0 +1,5 @@
+Bucket created successfully `local/backups`.
+AccessKey: production-backup
+PolicyName: production-backup
+AccessKey: staging-backup
+PolicyName: staging-backup

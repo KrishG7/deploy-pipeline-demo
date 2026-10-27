@@ -1,0 +1,13 @@
+# 2026-10-27T06:17:14Z GitHub environments, protection rules and self-hosted runner (gh api)
+## environments
+{"deployment_branch_policy":{"custom_branch_policies":true,"protected_branches":false},"name":"production","protection_rules":[{"prevent_self_review":false,"reviewers":["<repo-owner>"],"type":"required_reviewers"},{"prevent_self_review":null,"reviewers":[],"type":"branch_policy"}]}
+{"deployment_branch_policy":null,"name":"staging","protection_rules":[]}
+## production deployment branch policies
+{"name":"main","type":"branch"}
+## environment secrets (names only)
+staging: POSTGRES_PASSWORD S3_SECRET_KEY 
+production: POSTGRES_PASSWORD S3_SECRET_KEY 
+## fork PR workflow approval policy
+all_external_contributors
+## self-hosted runners
+{"labels":["self-hosted","macOS","ARM64","demo-deployer"],"name":"demo-mac","os":"macOS","status":"online"}

@@ -1,0 +1,101 @@
+# One stack per environment. The same file runs staging and production:
+#   docker compose -p staging    --env-file <staging.env>    -f deploy/compose.yml up -d
+#   docker compose -p production --env-file <production.env> -f deploy/compose.yml up -d
+# scripts/compose.sh wraps this. IMAGE_TAG is chosen by the deploy step.
+
+services:
+  caddy:
+    image: caddy:2.10-alpine
+    restart: unless-stopped
+    ports:
+      - "${BIND_ADDRESS:-127.0.0.1}:${HTTP_PORT:?}:${HTTP_PORT:?}"
+      - "${BIND_ADDRESS:-127.0.0.1}:${HTTPS_PORT:?}:${HTTPS_PORT:?}"
+    environment:
+      SITE_DOMAIN: ${SITE_DOMAIN:?}
+      CADDY_TLS: ${CADDY_TLS:-}
+      HTTP_PORT: ${HTTP_PORT}
+      HTTPS_PORT: ${HTTPS_PORT}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      api:
+        condition: service_healthy
+      web:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:2019/config/"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+  web:
+    image: ${IMAGE_PREFIX:?}-web:${IMAGE_TAG:?}
+    restart: unless-stopped
+    read_only: true
+    tmpfs: [/tmp]
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+
+  api:
+    image: ${IMAGE_PREFIX:?}-api:${IMAGE_TAG:?}
+    restart: unless-stopped
+    init: true
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    environment:
+      APP_ENV: ${APP_ENV:?}
+      PGHOST: db
+      PGDATABASE: ${POSTGRES_DB:?}
+      PGUSER: ${POSTGRES_USER:?}
+      PGPASSWORD: ${POSTGRES_PASSWORD:?}
+      SEED_ON_START: ${SEED_ON_START:-true}
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:?}
+      POSTGRES_USER: ${POSTGRES_USER:?}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    # No published ports: only the api and backup containers can reach it.
+
+  backup:
+    image: ${IMAGE_PREFIX:?}-backup:${IMAGE_TAG:?}
+    restart: unless-stopped
+    environment:
+      TZ: UTC
+      BACKUP_ENV: ${APP_ENV:?}
+      BACKUP_SCHEDULE: ${BACKUP_SCHEDULE:-0 2 * * *}
+      RETAIN_DAILY: ${RETAIN_DAILY:-7}
+      RETAIN_WEEKLY: ${RETAIN_WEEKLY:-4}
+      PGHOST: db
+      PGDATABASE: ${POSTGRES_DB:?}
+      PGUSER: ${POSTGRES_USER:?}
+      PGPASSWORD: ${POSTGRES_PASSWORD:?}
+      S3_ENDPOINT: ${S3_ENDPOINT:?}
+      S3_BUCKET: ${S3_BUCKET:?}
+      S3_ACCESS_KEY: ${S3_ACCESS_KEY:?}
+      S3_SECRET_KEY: ${S3_SECRET_KEY:?}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  db_data:
+  caddy_data:
+  caddy_config:

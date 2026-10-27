@@ -1,0 +1,23 @@
+# 2026-10-27T05:24:32Z local API lint + tests (node v25.9.0, postgres:16-alpine container)
+eslint: no problems
+
+> appointments-api@1.0.0 test
+> node --test --test-concurrency=1 test/*.test.js
+
+migration applied: 001_create_appointments.sql
+✔ migration is idempotent (50.105833ms)
+seed inserted 25 rows
+seed skipped: 25 rows already present
+✔ seed inserts 25 rows once (5.307625ms)
+✔ GET /health reports status, version and database (18.205541ms)
+✔ GET /api/appointments lists the seeded rows (8.659ms)
+✔ POST /api/appointments creates a row (12.307959ms)
+✔ POST /api/appointments rejects invalid input (2.604125ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 338.755

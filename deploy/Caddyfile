@@ -1,0 +1,35 @@
+# Front proxy for one environment.
+#
+# Demo: SITE_DOMAIN=staging.localhost / app.localhost and CADDY_TLS="tls internal"
+# (certificates from Caddy's own local CA).
+# Real servers: SITE_DOMAIN=<the real domain> and CADDY_TLS empty. Caddy then gets
+# and renews a Let's Encrypt certificate automatically, with this same file.
+{
+	http_port {$HTTP_PORT:80}
+	https_port {$HTTPS_PORT:443}
+}
+
+{$SITE_DOMAIN} {
+	{$CADDY_TLS}
+
+	encode gzip
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		-Server
+	}
+
+	handle /api/* {
+		reverse_proxy api:3000
+	}
+	handle /health {
+		reverse_proxy api:3000
+	}
+	handle {
+		reverse_proxy web:8080
+	}
+
+	log
+}

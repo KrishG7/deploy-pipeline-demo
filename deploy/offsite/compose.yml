@@ -1,0 +1,27 @@
+# Stand-in for offsite object storage (an S3 bucket in the real setup).
+# Its own Compose project, separate from both app stacks:
+#   docker compose -p offsite --env-file deploy/offsite/.env -f deploy/offsite/compose.yml up -d
+#
+# The upstream minio/minio image is no longer published on Docker Hub;
+# pgsty/minio is a maintained community build of the same server.
+services:
+  minio:
+    image: pgsty/minio:RELEASE.2026-08-04T00-00-00Z
+    restart: unless-stopped
+    command: ["server", "/data", "--console-address", ":9001"]
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:?}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:?}
+    ports:
+      - "127.0.0.1:9000:9000"
+      - "127.0.0.1:9001:9001"
+    volumes:
+      - minio_data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:9000/minio/health/live"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+volumes:
+  minio_data:
