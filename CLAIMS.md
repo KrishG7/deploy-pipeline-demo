@@ -22,9 +22,10 @@ Every factual statement and number in the PDF, with the file and line that backs
 | 1 | emailed when usage passed its threshold and stayed quiet below it | `evidence/20-disk-alert-normal-threshold.txt` | 4 | `no alert sent` |
 | 1 | Released v1.0.0, then v1.1.0 | `evidence/24-rollback-run.txt` | 29 | `sha-d383577 1.1.0` |
 | 1 | 64.4 s from approval to healthy | `evidence/23-rollback-before-during-after-health.txt` | 68 | `HEALTHY on 1.0.0; approval to healthy: 64.4 s` |
-| 1 | checks logged in the verification | `verification.md` | 0 | `\| 37 \|` |
+| 1 | 37 | `verification.md` | 43 | `\| 37 \|` |
 | 1 | 19.1 s | `evidence/21-production-v1.1.0-approval-to-healthy.txt` | 25 | `HEALTHY on 1.1.0; approval to healthy: 19.1 s` |
 | 1 | 32 PASS, 1 FAIL and 4 NOT RUN | `verification.md` | 36 | `\| FAIL \|` |
+| 1 | 32 PASS, 1 FAIL and 4 NOT RUN | `verification.md` | 7 | `\| PASS \|` |
 | 1 | 32 PASS, 1 FAIL and 4 NOT RUN | `verification.md` | 37 | `\| NOT RUN \|` |
 | 2 | sha-d383577 | `evidence/22-deploy-v1.1.0-full-run.txt` | 18 | `deploying tag sha-d383577` |
 | 2 | within 60 seconds | `deploy/deploy.sh` | 16 | `timeout=${HEALTH_TIMEOUT:-60}` |
@@ -76,4 +77,4 @@ Every factual statement and number in the PDF, with the file and line that backs
 | 4 | backup kept for 30 days | `docs/MIGRATION-PLAN.md` | 64 | `Keep the final dump from the window for at least 30 days` |
 | 4 | lowered two days before | `docs/MIGRATION-PLAN.md` | 27 | `at least 48 hours before the window` |
 
-Check result: 2 problem(s), see the script output.
+Check result: all 72 claims found in the PDF and in their evidence; 72 distinct numbers in the PDF text, none without a claim; no internal paths, usernames, emails or tokens.

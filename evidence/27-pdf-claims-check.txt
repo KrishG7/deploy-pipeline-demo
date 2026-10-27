@@ -1,0 +1,15 @@
+# 2026-10-27T07:09:08Z node pdf/claims.mjs
+72 claims, 72 distinct numbers checked, 0 failures
+exit 0
+
+# pdftotext scan for internal details
+27:and secrets. Both served the app over HTTPS.
+69:Non-root containers, no database port exposed, separate secrets per
+grep exit 0 (1 = nothing found). Both hits are the ordinary word "secrets" in prose (lines 27 and 69), not secret values; no paths, emails, usernames or tokens.
+
+# PDF properties
+Pages:           4
+Page size:       594.96 x 841.92 pts (A4)
+
+# em dashes in the PDF text
+0

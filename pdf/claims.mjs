@@ -37,7 +37,8 @@ const claims = [
   { p: 1, pdf: '64.4 s from approval to healthy', file: 'evidence/23-rollback-before-during-after-health.txt', find: 'HEALTHY on 1.0.0; approval to healthy: 64.4 s' },
   { p: 1, pdf: '37', file: 'verification.md', find: '| 37 |' },
   { p: 1, pdf: '19.1 s', file: 'evidence/21-production-v1.1.0-approval-to-healthy.txt', find: 'HEALTHY on 1.1.0; approval to healthy: 19.1 s' },
-  { p: 1, pdf: '32 PASS, 1 FAIL and 4 NOT RUN', file: 'verification.md', find: '| FAIL |' },
+  { p: 1, pdf: '32 PASS, 1 FAIL and 4 NOT RUN', file: 'verification.md', find: '| FAIL |', count: { pattern: '| FAIL |', equals: 1 } },
+  { p: 1, pdf: '32 PASS, 1 FAIL and 4 NOT RUN', file: 'verification.md', find: '| PASS |', count: { pattern: '| PASS |', equals: 32 } },
   { p: 1, pdf: '32 PASS, 1 FAIL and 4 NOT RUN', file: 'verification.md', find: '| NOT RUN |', count: { pattern: '| NOT RUN |', equals: 4 } },
   // Page 2
   { p: 2, pdf: 'sha-d383577', file: 'evidence/22-deploy-v1.1.0-full-run.txt', find: 'deploying tag sha-d383577' },
