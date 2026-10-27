@@ -1,0 +1,33 @@
+# Deploy run 40463490639 (v1.1.0)
+run conclusion: success
+Build and push images: conclusion=success started=2026-10-27T06:50:29Z completed=2026-10-27T06:52:40Z
+Deploy to staging: conclusion=success started=2026-10-27T06:52:44Z completed=2026-10-27T06:53:31Z
+Deploy to production: conclusion=success started=2026-10-27T06:54:44Z completed=2026-10-27T06:55:14Z
+
+## Approval record
+{"comment":"","environments":["production"],"state":"approved","user":"<repo-owner>"}
+
+## Job: Build and push images
+#27 pushing manifest for ghcr.io/<repo-owner>/deploy-pipeline-demo-api:sha-d383577@sha256:59d7de617669cd185e3c89205121d32341c963aaa67ab6a194861d1734b5b275
+#27 pushing manifest for ghcr.io/<repo-owner>/deploy-pipeline-demo-api:v1.1.0@sha256:59d7de617669cd185e3c89205121d32341c963aaa67ab6a194861d1734b5b275
+#23 pushing manifest for ghcr.io/<repo-owner>/deploy-pipeline-demo-backup:sha-d383577@sha256:653f9ab40958e8977bbe29bb8e517d01392966399665699739450c4be0757f7d
+#23 pushing manifest for ghcr.io/<repo-owner>/deploy-pipeline-demo-backup:v1.1.0@sha256:653f9ab40958e8977bbe29bb8e517d01392966399665699739450c4be0757f7d
+
+## Job: Deploy to staging
+wrote staging env file (18 variables, mode 600)
+2026-10-27T06:52:55Z [deploy:staging] deploying tag sha-d383577 (previous: sha-6b743c0)
+2026-10-27T06:52:55Z [deploy:staging] pulling images
+2026-10-27T06:53:13Z [deploy:staging] api image ghcr.io/<repo-owner>/deploy-pipeline-demo-api:sha-d383577 is version 1.1.0 (ghcr.io/<repo-owner>/deploy-pipeline-demo-api@sha256:59d7de617669cd185e3c89205121d32341c963aaa67ab6a194861d1734b5b275)
+2026-10-27T06:53:23Z [deploy:staging] containers started, waiting up to 60s for https://staging.localhost:8443/health to report version 1.1.0
+2026-10-27T06:53:23Z [deploy:staging] HEALTHY after 10s: {"status":"ok","version":"1.1.0","environment":"staging","database":{"status":"ok","latencyMs":1}}
+
+## Job: Deploy to production
+wrote production env file (18 variables, mode 600)
+pre-deploy backup of production (running sha-6b743c0, about to deploy sha-d383577)
+2026-10-27T06:54:54Z [backup:production] starting predeploy backup of database 'appointments' -> offsite/backups/production/predeploy/production_predeploy_20261027T065454Z_before-sha-d383577.dump
+2026-10-27T06:54:54Z [backup:production] uploaded production_predeploy_20261027T065454Z_before-sha-d383577.dump (4904 bytes, 11 TOC entries, appointments rows=28, sha256=e23503ece254fa900ded3741628af0ccdb4bfa19ce1a0940833b70032b9d6c25) in 0s
+2026-10-27T06:54:54Z [deploy:production] deploying tag sha-d383577 (previous: sha-6b743c0)
+2026-10-27T06:54:54Z [deploy:production] pulling images
+2026-10-27T06:54:56Z [deploy:production] api image ghcr.io/<repo-owner>/deploy-pipeline-demo-api:sha-d383577 is version 1.1.0 (ghcr.io/<repo-owner>/deploy-pipeline-demo-api@sha256:59d7de617669cd185e3c89205121d32341c963aaa67ab6a194861d1734b5b275)
+2026-10-27T06:55:06Z [deploy:production] containers started, waiting up to 60s for https://app.localhost/health to report version 1.1.0
+2026-10-27T06:55:06Z [deploy:production] HEALTHY after 10s: {"status":"ok","version":"1.1.0","environment":"production","database":{"status":"ok","latencyMs":1}}

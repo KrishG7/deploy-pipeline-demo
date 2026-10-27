@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Deployment pipeline demo: evidence sample</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1c2126;
+    --muted: #5a636d;
+    --rule: #d4d6d2;
+    --soft: #f3f3f0;
+    --accent: #1d5c63;
+  }
+  @page { size: A4; margin: 13mm 14mm 16mm 14mm; }
+  * { box-sizing: border-box; }
+  html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { margin: 0; font: 8.9pt/1.38 "IBM Plex Sans", sans-serif; color: var(--ink); }
+  .page { page-break-after: always; break-after: page; }
+  .page:last-child { page-break-after: auto; break-after: auto; }
+  h1, h2, h3 { font-family: "Source Serif 4", Georgia, serif; font-weight: 600; margin: 0; }
+  h1 { font-size: 20pt; line-height: 1.15; }
+  h2 { font-size: 13.5pt; margin: 0 0 2.2mm; padding-bottom: 1.2mm; border-bottom: 1.5px solid var(--accent); }
+  h3 { font-size: 10.5pt; margin: 3.2mm 0 1.2mm; color: var(--accent); }
+  p { margin: 0 0 1.8mm; }
+  .kicker { font-size: 8pt; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); font-weight: 600; margin-bottom: 1.5mm; }
+  .lede { color: var(--muted); margin: 1.5mm 0 2.5mm; max-width: 165mm; }
+  .note { border-left: 3px solid var(--accent); background: var(--soft); padding: 2mm 3mm; margin: 2.5mm 0 3mm; }
+  table { width: 100%; border-collapse: collapse; margin: 1mm 0 2.5mm; }
+  th, td { text-align: left; vertical-align: top; padding: 1.0mm 1.8mm; border-bottom: 1px solid var(--rule); }
+  th { font-weight: 600; font-size: 8.3pt; color: var(--muted); border-bottom: 1.2px solid var(--ink); }
+  td.n { white-space: nowrap; color: var(--muted); }
+  td.ev { white-space: nowrap; }
+  .tag { font-weight: 600; color: var(--accent); }
+  .dnr { font-style: italic; color: var(--muted); }
+  code, .mono { font-family: "IBM Plex Mono", Menlo, monospace; font-size: 7.8pt; }
+  figure { margin: 0 0 2.4mm; }
+  figure img { display: block; width: 100%; border: 1px solid var(--rule); }
+  figcaption { font-size: 7.8pt; color: var(--muted); margin-top: 0.8mm; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 4mm; }
+  .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 3.5mm; }
+  .fig-num { font-weight: 600; color: var(--ink); }
+  .figures { display: grid; grid-template-columns: 1fr 1fr; gap: 3mm 4mm; }
+  .figbox { border: 1px solid var(--rule); background: var(--soft); padding: 2.5mm 3mm; font-size: 8.4pt; }
+  .figbox .mono { display: block; margin-top: 1mm; white-space: pre-wrap; }
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3mm; margin: 2mm 0 3mm; }
+  .stat { border-top: 2px solid var(--accent); padding-top: 1.4mm; }
+  .stat b { display: block; font-family: "Source Serif 4", Georgia, serif; font-size: 15pt; font-weight: 600; }
+  .stat span { font-size: 7.9pt; color: var(--muted); }
+  pre.log { margin: 0 0 2mm; background: #1f2226; color: #e8e8e6; padding: 2.2mm 2.8mm; font: 6.9pt/1.42 "IBM Plex Mono", Menlo, monospace; white-space: pre-wrap; word-break: break-all; }
+  ul { margin: 0 0 2mm; padding-left: 4.5mm; }
+  li { margin-bottom: 0.8mm; }
+  ol.q { margin: 0; padding-left: 5mm; }
+  ol.q li { margin-bottom: 1.6mm; }
+</style>
+</head>
+<body>
+
+<!-- ============================ PAGE 1 ============================ -->
+<section class="page">
+  <div class="kicker">Evidence sample for the deployment proposal</div>
+  <h1>Staging, approved production releases, backups, alerts and rollback, running end to end</h1>
+  <p class="lede">I built a small appointment app (React, Node.js 20, PostgreSQL 16) and put it through the setup you described: two environments, GitHub Actions with a manual production approval, HTTPS, restarts, access controls, daily backups with retention, a restore into staging, alerts and a rollback. Everything below was run and observed, and every number comes from a saved log. Where something can only be done on a real Linux server, it is written as a runbook and marked <span class="dnr">documented, not run in this demo</span>.</p>
+
+  <div class="note">In this demo the two servers are simulated as separate Compose projects on one machine. On your setup they are two separate cloud servers, and the deploy step connects over SSH.</div>
+
+  <h2>Your nine scope points</h2>
+  <table>
+    <thead><tr><th style="width:4%">#</th><th style="width:22%">Scope point</th><th>What was done and observed</th><th style="width:9%">Evidence</th></tr></thead>
+    <tbody>
+      <tr><td class="n">1</td><td>Staging and production</td><td>One Compose file run as two projects, each with its own database volume, ports and secrets. Both served the app over HTTPS.</td><td class="ev">p. 2</td></tr>
+      <tr><td class="n">2</td><td>GitHub Actions, manually approved production</td><td>Every push to main builds once and deploys to staging automatically. Production waits for a named reviewer, then deploys the identical image (same digest), never a rebuild. A backup runs automatically right before each production deploy.</td><td class="ev">p. 2</td></tr>
+      <tr><td class="n">3</td><td>HTTPS</td><td>Caddy terminates TLS; deploy health checks verify the certificate against the issuing CA rather than skipping verification. Here Caddy uses its own local CA. <span class="dnr">Let's Encrypt on your real domain is the same Caddyfile with the domain filled in: documented, not run in this demo.</span></td><td class="ev">p. 2</td></tr>
+      <tr><td class="n">4</td><td>Restarts</td><td>All services restart automatically and have healthchecks. I killed the production API process: Docker restarted it and <code>/health</code> answered 200 again in under 1 second.</td><td class="ev">p. 4</td></tr>
+      <tr><td class="n">5</td><td>Access controls</td><td>Non-root containers, no database port exposed, separate secrets per environment, production gated by a reviewer. Backup storage users tested: 3 allowed and 4 denied actions, exactly as designed. <span class="dnr">SSH keys only, no root login, firewall 22/80/443, fail2ban, automatic security updates, restricted deploy user: documented, not run in this demo.</span></td><td class="ev">p. 3</td></tr>
+      <tr><td class="n">6</td><td>Daily PostgreSQL backups with retention</td><td><code>pg_dump</code> on a daily schedule to offsite-style object storage, each dump checked as readable. Retention test: 60 daily backups in, 9 kept (7 daily plus 4 weekly), 51 removed.</td><td class="ev">p. 3</td></tr>
+      <tr><td class="n">7</td><td>Tested restore into staging</td><td>A fresh production backup restored into staging with checksum, row count (28 of 28) and health checks. Total time 3.5 s for this small database.</td><td class="ev">p. 3</td></tr>
+      <tr><td class="n">8</td><td>Uptime, disk and app-failure alerts</td><td>Uptime Kuma emailed DOWN when production went down and UP when it came back. The disk script emailed when usage passed its threshold and stayed quiet below it.</td><td class="ev">p. 4</td></tr>
+      <tr><td class="n">9</td><td>Demonstrated rollback</td><td>Released v1.0.0, then v1.1.0 with a visible change, then rolled production back to v1.0.0 through the same approval. 64.4 s from approval to healthy, with no failed health check during the switch.</td><td class="ev">p. 2</td></tr>
+    </tbody>
+  </table>
+
+  <div class="stats">
+    <div class="stat"><b>37</b><span>checks logged in the verification table</span></div>
+    <div class="stat"><b>19.1 s</b><span>approval to healthy, release v1.1.0</span></div>
+    <div class="stat"><b>64.4 s</b><span>approval to healthy, rollback to v1.0.0</span></div>
+    <div class="stat"><b>3.5 s</b><span>restore of a production backup into staging</span></div>
+  </div>
+  <p style="color:var(--muted);font-size:8.2pt">The verification table records 32 PASS, 1 FAIL and 4 NOT RUN. The FAIL is one early screenshot of the v1.0.0 page that missed the footer showing the version (the health endpoint records the version instead). The 4 NOT RUN items need a real server or your logged-in browser: server hardening, a Let's Encrypt certificate on a real domain, the SSH deploy, and a screenshot of the approval dialog.</p>
+</section>
+
+<!-- ============================ PAGE 2 ============================ -->
+<section class="page">
+  <h2>The pipeline: staging, approval, production, rollback</h2>
+  <p>One workflow builds the images once and tags them with the commit (<code>sha-d383577</code>) and the release (<code>v1.1.0</code>). Staging is deployed automatically and must report the new version on <code>/health</code> within 60 seconds, or the job fails. Production then waits for a reviewer. After approval, it takes a backup and deploys <strong>the same tag that passed staging</strong>; the API image digest was identical in both environments. Rollback is a separate workflow that redeploys an earlier tag behind the same approval, with no rebuild and no database change.</p>
+
+  <div class="figures">
+    <figure><img src="build/01-actions-staging-deployed-production-waiting.png" alt=""><figcaption><span class="fig-num">1.</span> Release v1.1.0: images built, staging deployed, production waiting for review.</figcaption></figure>
+    <div class="figbox" id="approval-slot">
+      <span class="fig-num">2.</span> Approval. The production job only started after the required reviewer approved it in GitHub. Approval record returned by the GitHub API for this run:
+      <span class="mono">{"state":"approved","environments":["production"]}</span>
+      <span style="display:block;margin-top:1.5mm">Watcher log for the same release:</span>
+      <span class="mono">06:53:35 WAITING FOR REVIEW
+06:54:42 APPROVED
+06:55:01 HEALTHY on 1.1.0; approval to healthy: 19.1 s</span>
+    </div>
+    <figure><img src="build/03-actions-production-deploy-completed.png" alt=""><figcaption><span class="fig-num">3.</span> The same run completed: production deployed after approval.</figcaption></figure>
+    <figure><img src="build/04-actions-rollback-run.png" alt=""><figcaption><span class="fig-num">4.</span> Rollback workflow: tag check, then production redeployed to v1.0.0 after approval.</figcaption></figure>
+  </div>
+
+  <h3>Measured</h3>
+  <table>
+    <thead><tr><th>Step</th><th>Result</th></tr></thead>
+    <tbody>
+      <tr><td>Release v1.1.0, approval to production healthy</td><td>19.1 s; the pre-deploy backup (28 rows) ran first in the same job</td></tr>
+      <tr><td>Rollback v1.1.0 to v1.0.0, approval to healthy</td><td>64.4 s. About 47 s of this was the runner on the demo machine picking up the job; the deploy step itself took 12 s (06:58:40 to 06:58:52 UTC).</td></tr>
+      <tr><td>Health during the rollback (one request per second)</td><td>58 requests, all answered: 57 on 1.1.0, then 1.0.0. No errors.</td></tr>
+      <tr><td>Image after rollback</td><td>Same API digest as the original v1.0.0 release (<code>sha256:4af6a5e4...</code>); rows (28) and migrations unchanged</td></tr>
+    </tbody>
+  </table>
+
+  <div class="grid2">
+    <figure><img src="build/07b-app-production-v1.1.0-footer.png" alt=""><figcaption>Production page footer after the v1.1.0 release.</figcaption></figure>
+    <figure><img src="build/07c-app-production-v1.0.0-after-rollback-footer.png" alt=""><figcaption>The same footer after the rollback to v1.0.0.</figcaption></figure>
+  </div>
+</section>
+
+<!-- ============================ PAGE 3 ============================ -->
+<section class="page">
+  <h2>Backups and recovery</h2>
+  <p>A small backup container next to each database runs <code>pg_dump</code> every day at 02:00 UTC, checks that the dump can be read back, records the row count and a checksum, and uploads it to an S3-compatible bucket that stands in for offsite storage. Files are named with the environment and a timestamp, for example <code>production_daily_20261027T062642Z.dump</code>. A speeded-up schedule confirmed the timer fires on its own: backups started at 06:27:00 and 06:28:00 without anyone triggering them.</p>
+
+  <h3>Retention: keep 7 daily and 4 weekly</h3>
+  <p>Tested with 60 dummy backups, one per day from 29 August to 27 October 2026, then the real pruning script. Result: 60 before, 9 after, 51 deleted.</p>
+  <div class="grid2">
+    <pre class="log"># BEFORE pruning: 60 dummy backups
+production_daily_20260829T020000Z.dump
+production_daily_20260830T020000Z.dump
+production_daily_20260831T020000Z.dump
+... 54 more, one per day ...
+production_daily_20261025T020000Z.dump
+production_daily_20261026T020000Z.dump
+production_daily_20261027T020000Z.dump</pre>
+    <pre class="log"># AFTER pruning (7 daily + 4 weekly): 9 left
+production_daily_20261011  Sun  week 41
+production_daily_20261018  Sun  week 42
+production_daily_20261021  Wed  week 43
+production_daily_20261022  Thu  week 43
+production_daily_20261023  Fri  week 43
+production_daily_20261024  Sat  week 43
+production_daily_20261025  Sun  week 43
+production_daily_20261026  Mon  week 44
+production_daily_20261027  Tue  week 44</pre>
+  </div>
+  <p style="font-size:8.4pt;color:var(--muted)">Weeks 43 and 44 are already covered by the daily copies, so the four weekly slots add weeks 41 and 42. This is the same rule restic and similar tools use.</p>
+
+  <h3>Restore of a production backup into staging</h3>
+  <p>Staging had 25 rows; production had 28, including three entered through the live API. The script stops the staging API, downloads the backup, verifies its checksum, drops and recreates the database, restores, compares row counts, starts the API and checks health.</p>
+  <pre class="log">[restore-to-staging] restoring production/manual/production_manual_20261027T063003Z.dump into staging
+[restore-to-staging] step 1/4: stopping staging api
+[restore] checksum matches metadata; rows at backup time: 28
+[restore] dropping and recreating database 'appointments'
+[restore] pg_restore into 'appointments'
+[restore] appointments rows after restore: 28 (expected 28)
+[restore] row count check: OK
+[restore-to-staging] health: {"status":"ok","version":"1.0.0","environment":"staging","database":{"status":"ok"}}
+[restore-to-staging] API returns 28 appointments, database has 28
+[restore-to-staging] RESULT: restore OK. total time 3.5 s (3501 ms)</pre>
+
+  <div class="stats">
+    <div class="stat"><b>3.5 s</b><span>total restore time (small demo database)</span></div>
+    <div class="stat"><b>28 / 28</b><span>rows after restore vs. at backup time</span></div>
+    <div class="stat"><b>9 of 60</b><span>backups kept by the retention test</span></div>
+    <div class="stat"><b>4 denied</b><span>cross-environment storage actions blocked</span></div>
+  </div>
+
+  <h3>Who can touch the backups</h3>
+  <table>
+    <thead><tr><th>Credentials</th><th>Action</th><th>Result</th></tr></thead>
+    <tbody>
+      <tr><td>production</td><td>list own backups</td><td>allowed</td></tr>
+      <tr><td>production</td><td>list or write staging backups</td><td>denied (2 tests)</td></tr>
+      <tr><td>staging</td><td>list and read production backups (needed for restore tests)</td><td>allowed (2 tests)</td></tr>
+      <tr><td>staging</td><td>write or delete production backups</td><td>denied (2 tests)</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ============================ PAGE 4 ============================ -->
+<section class="page">
+  <h2>Monitoring and alerts</h2>
+  <p>Uptime Kuma runs separately from both app stacks and checks <code>/health</code> on staging and production every 20 seconds. Alerts go by email; here a local inbox (Mailpit) receives them so they can be shown.</p>
+  <figure><img src="build/06.png" alt=""><figcaption><span class="fig-num">6.</span> Alert inbox: DOWN and UP for production, and two disk alerts.</figcaption></figure>
+  <div class="grid2" style="grid-template-columns: 1.05fr 1fr; align-items:start">
+    <figure><img src="build/05.png" alt=""><figcaption><span class="fig-num">5.</span> Uptime Kuma: both environments monitored; the outage drills appear as Down, then Up.</figcaption></figure>
+    <table style="margin-top:0">
+      <thead><tr><th style="width:34%">Drill</th><th>Observed</th></tr></thead>
+      <tbody>
+        <tr><td>App crash (API process killed)</td><td>Docker restarted the container on its own; <code>/health</code> answered 200 in under 1 second. Too short for a 20-second monitor to notice, so no alert.</td></tr>
+        <tr><td>App down (API stopped)</td><td>Stopped 06:48:55 UTC, DOWN email 06:49:01. Started again 06:49:02, UP email 06:49:21.</td></tr>
+        <tr><td>Disk, threshold 30%</td><td>System disk at 36%: alert sent.</td></tr>
+        <tr><td>Disk, normal threshold 80%</td><td>System disk at 36%: no alert. The demo machine's data disk really was at 89%, so the same check correctly alerted there.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 style="margin-top:4mm">Moving your live app</h2>
+  <div class="grid2">
+    <div>
+      <ul>
+        <li><strong>Build alongside.</strong> New staging and production are built and tested next to the current server, on a temporary hostname, without touching it.</li>
+        <li><strong>Rehearse first.</strong> The database copy is rehearsed into the new staging and timed, which sets the length of the window.</li>
+        <li><strong>Maintenance window.</strong> Writes are paused, a final backup is taken and kept, the database is copied and checked by row counts. For a database under 1 GB, plan for about 30 to 40 minutes.</li>
+      </ul>
+    </div>
+    <div>
+      <ul>
+        <li><strong>Switch.</strong> DNS is pointed at the new server (with the time-to-live lowered two days before). The certificate is issued automatically.</li>
+        <li><strong>Keep the old server for 7 days</strong>, untouched, with the final backup kept for 30 days.</li>
+        <li><strong>Rollback trigger.</strong> If the new server fails its checks or data looks wrong, DNS goes back to the old server, which was never modified.</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2 style="margin-top:3mm">Two questions for you</h2>
+  <ol class="q">
+    <li><strong>Which cloud provider and region would you like the two servers on?</strong> This decides the backup storage service and the firewall setup.</li>
+    <li><strong>How large is the current database?</strong> The result of <code>SELECT pg_size_pretty(pg_database_size(current_database()));</code> is enough to size the servers and plan the maintenance window.</li>
+  </ol>
+</section>
+
+</body>
+</html>

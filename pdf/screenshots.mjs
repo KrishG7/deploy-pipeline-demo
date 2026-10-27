@@ -39,7 +39,8 @@ try {
   if (mode === 'app') {
     await page.goto(arg || 'https://app.localhost', { waitUntil: 'networkidle' });
     await page.waitForSelector('table');
-    await page.screenshot({ path: out, fullPage: false });
+    // Full page, so the footer with the version is in the picture.
+    await page.screenshot({ path: out, fullPage: true });
   } else if (mode === 'kuma') {
     const { KUMA_URL, KUMA_ADMIN_USER, KUMA_ADMIN_PASSWORD } = env();
     await page.goto(`${KUMA_URL}/dashboard`);
